@@ -57,8 +57,9 @@ ScrotOptions opt = {
 
 int optionsParseRequiredDecimal(char* str)
 {
-    assert(NULL != str); // fix yout caller function,
-                         //  the user does not impose this behavior
+    /* Caller should never send NULL here. */
+    assert(NULL != str);
+
     char* end = NULL;
     long ret = 0L;
     errno = 0;
