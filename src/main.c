@@ -94,6 +94,8 @@ int main(int argc, char** argv)
         image = scrotSelectionSelectMode();
     else if (opt.autoselect)
         image = scrotGrabAutoselect();
+    else if (opt.window)
+        image = scrotGrabWindow();
     else {
         scrotDoDelay();
         if (opt.multidisp)
@@ -366,15 +368,11 @@ void scrotExecApp(Imlib_Image image, struct tm* tm,
     exit(0);
 }
 
-Imlib_Image scrotGrabFocused(void)
+Imlib_Image scrotGrabTarget(Window target)
 {
     Imlib_Image im = NULL;
     int rx = 0, ry = 0, rw = 0, rh = 0;
-    Window target = None;
-    int ignored;
 
-    scrotDoDelay();
-    XGetInputFocus(disp, &target, &ignored);
     if (!scrotGetGeometry(target, &rx, &ry, &rw, &rh))
         return NULL;
     scrotNiceClip(&rx, &ry, &rw, &rh);
@@ -382,6 +380,22 @@ Imlib_Image scrotGrabFocused(void)
     if (opt.pointer)
         scrotGrabMousePointer(im, rx, ry);
     return im;
+}
+
+Imlib_Image scrotGrabFocused(void)
+{
+    Window target = None;
+    int ignored;
+
+    scrotDoDelay();
+    XGetInputFocus(disp, &target, &ignored);
+    return scrotGrabTarget(target);
+}
+
+Imlib_Image scrotGrabWindow(void)
+{
+    scrotDoDelay();
+    return scrotGrabTarget(opt.window);
 }
 
 Imlib_Image scrotGrabAutoselect(void)

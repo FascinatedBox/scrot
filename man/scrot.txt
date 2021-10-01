@@ -57,6 +57,7 @@ OPTIONS
                             500x200.
   -u, --focused             Use the currently focused window.
   -v, --version             Output version information and exit.
+  -w, --window WID          Select the window with numeric id WID.
   -z, --silent              Prevent beeping.
 
 SPECIAL STRINGS

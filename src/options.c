@@ -55,7 +55,7 @@ ScrotOptions opt = {
     .lineMode = LINE_MODE_CLASSIC,
 };
 
-int optionsParseRequiredDecimal(char* str)
+int parseRequiredNumber(char *str, int base)
 {
     /* Caller should never send NULL here. */
     assert(NULL != str);
@@ -64,7 +64,7 @@ int optionsParseRequiredDecimal(char* str)
     long ret = 0L;
     errno = 0;
 
-    ret = strtol(str, &end, 10);
+    ret = strtol(str, &end, base);
 
     if (errno)
         goto range_error;
@@ -81,6 +81,17 @@ int optionsParseRequiredDecimal(char* str)
 
 range_error:
     err(EXIT_FAILURE, "error strtol");
+}
+
+int optionsParseRequiredDecimal(char* str)
+{
+    return parseRequiredNumber(str, 10);
+}
+
+int optionsParseRequiredNumber(char* str)
+{
+    /* Base 0 allows hex numbers (ex: 0x123), with decimal as a default. */
+    return parseRequiredNumber(str, 0);
 }
 
 static int nonNegativeNumber(int number)
@@ -216,7 +227,7 @@ static void optionsParseWindowClassName(const char* windowClassName)
 
 void optionsParse(int argc, char** argv)
 {
-    static char stropts[] = "a:ofpbcd:e:hmq:s::t:uvzn:l:D:kC:S:";
+    static char stropts[] = "a:ofpbcd:e:hmq:s::t:uvw:zn:l:D:kC:S:";
 
     static struct option lopts[] = {
         /* actions */
@@ -232,6 +243,7 @@ void optionsParse(int argc, char** argv)
         { "freeze", no_argument, 0, 'f' },
         { "overwrite", no_argument, 0, 'o' },
         { "stack", no_argument, 0, 'k' },
+        { "window", required_argument, 0, 'w' },
         /* toggles */
         { "select", optional_argument, 0, 's' },
         { "thumb", required_argument, 0, 't' },
@@ -318,6 +330,9 @@ void optionsParse(int argc, char** argv)
             break;
         case 'S':
             opt.script = strdup(optarg);
+            break;
+        case 'w':
+            opt.window = optionsParseRequiredNumber(optarg);
             break;
         case '?':
             exit(EXIT_FAILURE);

@@ -43,6 +43,7 @@ struct __ScrotOptions {
     int quality;
     int border;
     int silent;
+    long window;
     int multidisp;
     int thumb;
     int thumbWidth;
