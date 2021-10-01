@@ -55,7 +55,7 @@ ScrotOptions opt = {
     .lineMode = LINE_MODE_CLASSIC,
 };
 
-int optionsParseRequiredNumber(char* str)
+int optionsParseRequiredDecimal(char* str)
 {
     assert(NULL != str); // fix yout caller function,
                          //  the user does not impose this behavior
@@ -164,7 +164,7 @@ static void optionsParseLine(char* optarg)
                 errx(EXIT_FAILURE, "Missing value for suboption '%s'",
                     token[Width]);
 
-            opt.lineWidth = optionsParseRequiredNumber(value);
+            opt.lineWidth = optionsParseRequiredDecimal(value);
 
             if (opt.lineWidth <= 0 || opt.lineWidth > 8)
                 errx(EXIT_FAILURE, "Value of the range (1..8) for "
@@ -196,7 +196,7 @@ static void optionsParseLine(char* optarg)
             if (!optionsParseIsString(value))
                 errx(EXIT_FAILURE, "Missing value for suboption '%s'",
                     token[Opacity]);
-            opt.lineOpacity = optionsParseRequiredNumber(value);
+            opt.lineOpacity = optionsParseRequiredDecimal(value);
             break;
         default:
             errx(EXIT_FAILURE, "No match found for token: '%s'", value);
@@ -262,7 +262,7 @@ void optionsParse(int argc, char** argv)
             opt.border = 1;
             break;
         case 'd':
-            opt.delay = nonNegativeNumber(optionsParseRequiredNumber(optarg));
+            opt.delay = nonNegativeNumber(optionsParseRequiredDecimal(optarg));
             break;
         case 'e':
             opt.exec = strdup(optarg);
@@ -271,7 +271,7 @@ void optionsParse(int argc, char** argv)
             opt.multidisp = 1;
             break;
         case 'q':
-            opt.quality = optionsParseRequiredNumber(optarg);
+            opt.quality = optionsParseRequiredDecimal(optarg);
             break;
         case 's':
             optionsParseSelection(optarg);
@@ -380,9 +380,9 @@ void optionsParseAutoselect(char* optarg)
     int i = 0;
 
     if (strchr(optarg, ',')) { /* geometry dimensions must be in format x,y,w,h   */
-        dimensions[i++] = optionsParseRequiredNumber(strtok(optarg, tokenDelimiter));
+        dimensions[i++] = optionsParseRequiredDecimal(strtok(optarg, tokenDelimiter));
         while ((token = strtok(NULL, tokenDelimiter)))
-            dimensions[i++] = optionsParseRequiredNumber(token);
+            dimensions[i++] = optionsParseRequiredDecimal(token);
         opt.autoselect = 1;
         opt.autoselectX = dimensions[0];
         opt.autoselectY = dimensions[1];
@@ -408,11 +408,11 @@ void optionsParseThumbnail(char* optarg)
 
     if (strchr(optarg, 'x')) { /* We want to specify the geometry */
         token = strtok(optarg, "x");
-        opt.thumbWidth = optionsParseRequiredNumber(token);
+        opt.thumbWidth = optionsParseRequiredDecimal(token);
         token = strtok(NULL, "x");
         if (token) {
-            opt.thumbWidth = optionsParseRequiredNumber(optarg);
-            opt.thumbHeight = optionsParseRequiredNumber(token);
+            opt.thumbWidth = optionsParseRequiredDecimal(optarg);
+            opt.thumbHeight = optionsParseRequiredDecimal(token);
 
             if (opt.thumbWidth < 0)
                 opt.thumbWidth = 1;
@@ -425,7 +425,7 @@ void optionsParseThumbnail(char* optarg)
                 opt.thumb = 1;
         }
     } else {
-        opt.thumb = optionsParseRequiredNumber(optarg);
+        opt.thumb = optionsParseRequiredDecimal(optarg);
         if (opt.thumb < 1)
             opt.thumb = 1;
         else if (opt.thumb > 100)
